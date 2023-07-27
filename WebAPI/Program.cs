@@ -1,12 +1,11 @@
 
-using Autofac.Extensions.DependencyInjection;
 using Autofac;
-using Business.Abstract;
-using Business.Concrete;
+using Autofac.Extensions.DependencyInjection;
 using Business.DependencyResolvers.Autofac;
-using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
-using Entities.Concrete;
+using Core.Utilities.Security.Encryption;
+using Core.Utilities.Security.JWT;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI
 {
@@ -21,7 +20,21 @@ namespace WebAPI
                 {
                     builder.RegisterModule(new AutofacBusinessModule());
                 });
-
+            var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = tokenOptions.Issuer,
+                        ValidAudience = tokenOptions.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                    };
+                });
             // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,7 +51,7 @@ namespace WebAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

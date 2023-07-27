@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess.EntityFramework;
+using Core.Entities.Concrete;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -11,29 +12,26 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal : EfEntityRepositoryBase<Users, ReCapContext>, IUserDal
+    public class EfUserDal : EfEntityRepositoryBase<User, ReCapContext>, IUserDal
     {
         public List<UserDetailsDto> GetUserDetails()
         {
             using (ReCapContext context = new ReCapContext())
             {
                 var result = from u in context.Users
-                             join c in context.Customers
-                             on u.CustomerId equals c.CustomerId
                              join r in context.Rentals
-                             on u.RentalId equals r.RentalId
+                             on u.Id equals r.UserId
                              join car in context.Cars
-                             on r.CarId equals car.CarId
+                             on r.CarId equals car.Id
                              join col in context.Colors
-                             on car.ColorId equals col.ColorId
+                             on car.ColorId equals col.Id
                              join b in context.Brands
-                             on car.BrandId equals b.BrandId
+                             on car.BrandId equals b.Id
                              select new UserDetailsDto
                              {
                                  FirstName = u.FirstName,
                                  LastName = u.LastName,
                                  Email = u.Email,
-                                 CompanyName = c.CompanyName,
                                  BrandName = b.BrandName,
                                  ColorName = col.ColorName,
                                  DailyPrice = car.DailyPrice,
@@ -42,6 +40,19 @@ namespace DataAccess.Concrete.EntityFramework
                                  RentDate = r.RentDate,
                                  ReturnDate = r.ReturnDate
                              };
+                return result.ToList();
+
+            }
+        }
+        public List<OperationClaim> GetClaims(User user)
+        {
+            using (var context = new ReCapContext())
+            {
+                var result = from operationClaim in context.OperationClaims
+                             join userOperationClaim in context.UserOperationClaims
+                                 on operationClaim.Id equals userOperationClaim.OperationClaimId
+                             where userOperationClaim.UserId == user.Id
+                             select new OperationClaim { Id = operationClaim.Id, Name = operationClaim.Name };
                 return result.ToList();
 
             }

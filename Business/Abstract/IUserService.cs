@@ -1,4 +1,5 @@
-﻿using Core.Utilities.Results;
+﻿using Core.Entities.Concrete;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using Entities.DTOs;
 using System;
@@ -11,13 +12,15 @@ namespace Business.Abstract
 {
     public interface IUserService
     {
-        IDataResult<List<Users>> GetAll();
-        IDataResult<List<Users>> GetUsersByName(string firstName);
-        IDataResult<Users> GetUserByEmail(string email);
-        IDataResult<Users> GetById(int id);
+        IDataResult<List<User>> GetAll();
+        IDataResult<List<User>> GetUsersByName(string firstName);
+        IDataResult<User> GetUserByEmail(string email);
+        IDataResult<User> GetById(int id);
         IDataResult<List<UserDetailsDto>> GetUserDetails();
-        IResult Add(Users user);
-        IResult Update(Users user);
-        IResult Delete(Users user);
+        IResult Add(User user);
+        IResult Update(User user);
+        IResult Delete(User user);
+        List<OperationClaim> GetClaims(User user);
+        User GetByMail(string email);
     }
 }

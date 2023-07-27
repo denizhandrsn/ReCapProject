@@ -1,0 +1,1 @@
+﻿insert into CarImages values(1,'F:\vs\ReCapProject\Images','2023-08-22 17:18:43')
