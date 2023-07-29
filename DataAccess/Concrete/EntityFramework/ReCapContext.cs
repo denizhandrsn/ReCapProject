@@ -15,6 +15,10 @@ namespace DataAccess.Concrete.EntityFramework
         {
             optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ReCapDatabase;Trusted_Connection=true");
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CarImages>().HasKey(c => c.Id);
+        }
         public DbSet<Brands> Brands { get; set; }
         public DbSet<Colors> Colors { get; set; }
         public DbSet<Car> Cars { get; set; }

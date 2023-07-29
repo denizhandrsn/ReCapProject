@@ -17,12 +17,12 @@ namespace WebAPI.Controllers
     public class CarImagesController:ControllerBase
     {
         ICarImageService _carImageService;
-        public static IWebHostEnvironment _webHostEnvironment;
-        public string _myUniqueFileName = string.Format(@"{0}.png", Guid.NewGuid());
-        public CarImagesController(ICarImageService carImageService, IWebHostEnvironment webHostEnvironment)
+        
+        
+        public CarImagesController(ICarImageService carImageService)
         {
             _carImageService = carImageService;
-            _webHostEnvironment = webHostEnvironment;
+            
             
         }
         [HttpGet("getall")]
@@ -36,50 +36,12 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
         [HttpPost("add")]
-        public IActionResult Add(CarImages carImages) 
+        public IActionResult Add([FromForm] IFormFile file, [FromForm] CarImages carImages) 
         {
-            carImages.Date = DateTime.Now;
-            var result = _carImageService.Add(carImages);
+            var result = _carImageService.Add(file,carImages);
             if (result.Success) { return Ok(result); }
             return BadRequest(result);
         }
-        [HttpPost("upload")]
-        public IResult UploadImage([FromForm] CarImageModel objectFile)
-        {
-            try
-            {
-               
-                if (objectFile.files.Length>0)
-                {
-                    string path = _webHostEnvironment.WebRootPath + "\\Images\\";
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
-                    using (FileStream fileStream = System.IO.File.Create(path+_myUniqueFileName))
-                    {
-                        
-                        objectFile.files.CopyTo(fileStream);
-                        fileStream.Flush();
-                        return new SuccessResult();
-                    }
-
-                }
-                else
-                {
-                    return new SuccessResult();
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return new SuccessResult(ex.Message);
-            }
-        }
-        
-        
-
-
     }
     
 }

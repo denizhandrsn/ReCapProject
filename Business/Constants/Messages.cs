@@ -25,5 +25,9 @@ namespace Business.Constants
         public static string SuccessfulLogin="Başarılı giriş";
         public static string UserAlreadyExists="Kullanıcı zaten mavcut";
         public static string AccessTokenCreated="Giriş tokeni oluşturuldu";
+        internal static string CarImagesAdded;
+        internal static string CarImagesDeleted;
+        internal static string CarImagesUpdated;
+        internal static string CheckIfCarImagesCarLimit;
     }
 }
