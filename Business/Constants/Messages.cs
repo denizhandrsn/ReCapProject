@@ -29,5 +29,6 @@ namespace Business.Constants
         internal static string CarImagesDeleted;
         internal static string CarImagesUpdated;
         internal static string CheckIfCarImagesCarLimit;
+        internal static string ColorsListed;
     }
 }
