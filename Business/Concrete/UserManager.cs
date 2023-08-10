@@ -1,8 +1,10 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.Utilities;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -26,6 +28,9 @@ namespace Business.Concrete
         [ValidationAspect(typeof(UserValidator))]
         public IResult Add(User user)
         {
+            UserBusinessRules userBusinessRules = new UserBusinessRules(_userDal);
+            IResult result = BusinessRules.Run(userBusinessRules.CheckIfUserAlreadyExists(user)
+                ,userBusinessRules.CheckIfEmailIsUsed(user));
             _userDal.Add(user);
             return new SuccessResult(Messages.UserAdded);
         }

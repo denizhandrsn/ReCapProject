@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
 using Business.ValidationRules.FluentValidation;
+using Business.Utilities;
 using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -20,11 +22,14 @@ namespace Business.Concrete
         public CarManager(ICarDal carDal)
         {
             _carDal = carDal;
-            
         }
         [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
+            CarBusinessRules carBusinessRules = new CarBusinessRules(_carDal);
+            IResult result = BusinessRules.Run(carBusinessRules.CheckIfCarAlreadyExists(car)
+                ,carBusinessRules.CheckIfCarNameIsUsed(car));
+            if (result != null) { return result; }
             _carDal.Add(car);
             return new SuccessResult();
         }

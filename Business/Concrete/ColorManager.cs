@@ -1,11 +1,15 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.Utilities;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +24,10 @@ namespace Business.Concrete
         }
         public IResult Add(Colors color)
         {
+            ColorBusinessRules colorBusinessRules = new ColorBusinessRules(_colorDal);
+            IResult result = BusinessRules.Run(colorBusinessRules.CheckIfColorAlreadyExists(color)
+                , colorBusinessRules.CheckIfColorNameIsUsed(color));
+            if (result != null) { return result; }
             _colorDal.Add(color);
             return new SuccessResult();
         }

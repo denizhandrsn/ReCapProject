@@ -1,10 +1,14 @@
 ﻿using Business.Abstract;
+using Business.Utilities;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +23,10 @@ namespace Business.Concrete
         }
         public IResult Add(Brands brand)
         {
+            BrandBusinessRules brandBusinessRules = new BrandBusinessRules(_brandDal);
+            IResult result = BusinessRules.Run(brandBusinessRules.CheckIfBrandAlreadyExists(brand)
+                , brandBusinessRules.CheckIfBrandNameIsUsed(brand));
+            if (result != null) { return result; }
             _brandDal.Add(brand);
             return new SuccessResult();
         }
