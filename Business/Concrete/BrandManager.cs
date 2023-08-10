@@ -17,15 +17,16 @@ namespace Business.Concrete
     public class BrandManager : IBrandService
     {
         IBrandDal _brandDal;
-        public BrandManager(IBrandDal brandDal)
+        BrandBusinessRules _brandBusinessRules;
+        public BrandManager(IBrandDal brandDal, BrandBusinessRules brandBusinessRules)
         {
             _brandDal = brandDal;
+            _brandBusinessRules = brandBusinessRules;
         }
         public IResult Add(Brands brand)
         {
-            BrandBusinessRules brandBusinessRules = new BrandBusinessRules(_brandDal);
-            IResult result = BusinessRules.Run(brandBusinessRules.CheckIfBrandAlreadyExists(brand)
-                , brandBusinessRules.CheckIfBrandNameIsUsed(brand));
+            IResult result = BusinessRules.Run(_brandBusinessRules.CheckIfBrandAlreadyExists(brand)
+                , _brandBusinessRules.CheckIfBrandNameIsUsed(brand));
             if (result != null) { return result; }
             _brandDal.Add(brand);
             return new SuccessResult();

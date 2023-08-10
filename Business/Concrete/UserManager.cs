@@ -21,16 +21,18 @@ namespace Business.Concrete
     public class UserManager:IUserService
     {
         IUserDal _userDal;
-        public UserManager(IUserDal userDal)
+        UserBusinessRules _userBusinessRules;
+        public UserManager(IUserDal userDal, UserBusinessRules userBusinessRules)
         {
             _userDal = userDal;
+            _userBusinessRules = userBusinessRules;
         }
         [ValidationAspect(typeof(UserValidator))]
         public IResult Add(User user)
         {
-            UserBusinessRules userBusinessRules = new UserBusinessRules(_userDal);
-            IResult result = BusinessRules.Run(userBusinessRules.CheckIfUserAlreadyExists(user)
-                ,userBusinessRules.CheckIfEmailIsUsed(user));
+            
+            IResult result = BusinessRules.Run(_userBusinessRules.CheckIfUserAlreadyExists(user)
+                ,_userBusinessRules.CheckIfEmailIsUsed(user));
             _userDal.Add(user);
             return new SuccessResult(Messages.UserAdded);
         }

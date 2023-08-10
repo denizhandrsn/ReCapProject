@@ -18,15 +18,16 @@ namespace Business.Concrete
     public class ColorManager : IColorService
     {
         IColorDal _colorDal;
-        public ColorManager(IColorDal colorDal)
+        ColorBusinessRules _colorBusinessRules;
+        public ColorManager(IColorDal colorDal, ColorBusinessRules colorBusinessRules)
         {
             _colorDal = colorDal;
+            _colorBusinessRules = colorBusinessRules;
         }
         public IResult Add(Colors color)
         {
-            ColorBusinessRules colorBusinessRules = new ColorBusinessRules(_colorDal);
-            IResult result = BusinessRules.Run(colorBusinessRules.CheckIfColorAlreadyExists(color)
-                , colorBusinessRules.CheckIfColorNameIsUsed(color));
+            IResult result = BusinessRules.Run(_colorBusinessRules.CheckIfColorAlreadyExists(color)
+                , _colorBusinessRules.CheckIfColorNameIsUsed(color));
             if (result != null) { return result; }
             _colorDal.Add(color);
             return new SuccessResult();

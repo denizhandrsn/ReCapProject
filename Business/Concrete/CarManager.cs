@@ -18,17 +18,18 @@ namespace Business.Concrete
     public class CarManager:ICarService
     {
         ICarDal _carDal;
+        CarBusinessRules _carBusinessRules;
 
-        public CarManager(ICarDal carDal)
+        public CarManager(ICarDal carDal, CarBusinessRules carBusinessRules)
         {
             _carDal = carDal;
+            _carBusinessRules = carBusinessRules;
         }
         [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
-            CarBusinessRules carBusinessRules = new CarBusinessRules(_carDal);
-            IResult result = BusinessRules.Run(carBusinessRules.CheckIfCarAlreadyExists(car)
-                ,carBusinessRules.CheckIfCarNameIsUsed(car));
+            IResult result = BusinessRules.Run(_carBusinessRules.CheckIfCarAlreadyExists(car)
+                ,_carBusinessRules.CheckIfCarNameIsUsed(car));
             if (result != null) { return result; }
             _carDal.Add(car);
             return new SuccessResult();
@@ -46,6 +47,8 @@ namespace Business.Concrete
 
         public IResult Update(Car car)
         {
+            IResult result = BusinessRules.Run(_carBusinessRules.CheckIfCarAlreadyExists(car));
+            if (result != null) { return result; }
             _carDal.Update(car);
             return new SuccessResult();
         }
